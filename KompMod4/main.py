@@ -72,4 +72,5 @@ def main():
 
     show_prob_density_and_function(v, u)
 
-main()
+if __name__ == "__main__":
+    main()
