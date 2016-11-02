@@ -28,22 +28,34 @@ def show_prob_density_and_function(v, u):
     plt.ylabel('y')
     plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
            ncol=2, mode="expand", borderaxespad=0.)
+
+    plt.title('PDF and CDF')
     plt.xticks(absc)
     plt.show()
 
 def testing_seq(v, u, alpha, N):
-    def emperic_graph(seq):
+    def emperic_graph(seq, v, u):
         seq.sort() 
+        teor_y = [max_value.pdf(v, u, x) for x in seq]
         yvals=np.arange(len(seq)) / float(len(seq)) 
         plt.plot(seq, yvals) 
+        #plt.plot(seq, teor_y, 'r') 
+
+        plt.xlabel('x')
+        plt.ylabel('y')
+        plt.title('Emperical denisty function')
         plt.show()
             
     print("Размер выборки: {}".format(N))
+    print("Парметры выборки: v = {}, u = {}".format(v, u))
     start = time.time()
     seq = [max_value.reverse_function_method(v, u) for x in range(N)]
-    emperic_graph(seq)
-
     building_time = time.time() - start
+
+    emperic_graph(seq, v, u)
+    with open("max_val{}_{}_{}.txt".format(len(seq), v, u), "w") as f:
+        f.write(str(seq))
+
     print("Время генерации выборки: {}".format(building_time))
     
     tests.chisqr_test(seq, alpha, v, u)
@@ -54,7 +66,6 @@ def main():
     sys.stdout = open("output.txt", "w+")
 
     v, u, alpha = get_arguments()
-
     testing_seq(v, u, alpha, 50)
     testing_seq(v, u, alpha, 200)
     testing_seq(v, u, alpha, 1000)
