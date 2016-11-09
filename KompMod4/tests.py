@@ -4,6 +4,8 @@ import sys
 import numpy
 import max_value
 from math import sqrt
+import matplotlib.pyplot as plt
+
 
 def kolmagorov(seq, v, u, alpha):
     def calc_d_plus(seq, v, u):
@@ -73,13 +75,31 @@ def chisqr_test(sequence, alpha, v, u):
             count = sum([a <= x < b for x in sequence])
             hits_amount.append(count)
 
+    emper_prob = [x / len_seq for x in hits_amount]
+
     # Вычисляется вероятность попадания слчайной величины в заданные
-    # интервалы при равномерном распределении.
+    # интервалы
     def calc_probs(intervals):
         return [max_value.cdf(v, u, x) - max_value.cdf(v, u, y) for x, y in zip(intervals[1:], intervals[:-1])]
 
     probabils = calc_probs(intervals)
 
+    def graph(intervals, probabils, emper_prob):
+        width = intervals[len(intervals) - 1] / (len(intervals) - 1)
+        fig = plt.figure()
+        ax = fig.add_subplot(111)
+        ax.bar(intervals[:len(intervals) - 1], probabils, width, label = u'Theoretical')
+        ax.bar(intervals[:len(intervals) - 1], emper_prob, width, alpha=0.5, color="red", label = u'Emperical')
+        ax.legend(loc = 'best', frameon = True)
+        plt.title('Chi2 Histogram')
+        plt.xlabel('intervals')
+        plt.ylabel('hits amount')
+        plt.xticks(intervals)
+        plt.show()
+
+
+
+    graph(intervals, probabils, emper_prob)
     # вычисляется статистика
     addition = 0
     for hits, probs in zip(hits_amount, probabils):
